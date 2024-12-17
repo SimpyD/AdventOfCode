@@ -1,0 +1,178 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class day6a {
+    public static int COUNT=0;
+    public static List<String> isVisited = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        String filePath = "public/sample.txt";
+        List<String> content = readFile(filePath);
+
+        int [] guardPosition = findGuard(content);
+
+
+
+
+        List<List<Character>> contentMap = new ArrayList<>();
+        for(String s : content){
+            List<Character> row = new ArrayList<>();
+            for(int i=0;i<s.length();i++){
+                row.add(s.charAt(i));
+            }
+            contentMap.add(row);
+        }
+
+        isVisited.add(String.valueOf(guardPosition[0]) + " " + String.valueOf(guardPosition[1]));
+        COUNT++;
+        String HEAD = findHead(contentMap.get(guardPosition[0]).get(guardPosition[1]));
+
+        String result="";
+        if(HEAD.equals("up")){
+            result = moveUp(contentMap,guardPosition[0]-1,guardPosition[1]);
+        }else if(HEAD.equals("right")){
+            result = moveRight(contentMap,guardPosition[0],guardPosition[1]+1);
+
+        }
+        else if(HEAD.equals("down")){
+            result = moveDown(contentMap,guardPosition[0]+1,guardPosition[1]);
+        }else if(HEAD.equals("left")){
+            result = moveLeft(contentMap,guardPosition[0],guardPosition[1]-1);
+
+        }
+        System.out.println(result);
+        System.out.println(COUNT);
+        System.out.println(isVisited.size());
+
+    }
+
+    public static String findHead(char head){
+        if(head == '^'){ return "up";} else if (head == 'v') { return "down";} else if (head == '<') { return "left";}
+        else {
+            return "right";
+        }
+    }
+
+    public static String moveUp(List<List<Character>> contentMap, int row,int col){
+        while(row>=0){
+            if(contentMap.get(row).get(col)=='#'){
+
+                return moveRight(contentMap,row+1,col+1);
+            }
+            String index=String.valueOf(row)+" "+String.valueOf(col);
+            if(!isVisited.contains(index)){
+                COUNT++;
+                isVisited.add(index);
+            }
+
+            row--;
+        }
+
+//    crossed border
+        return "success";
+    }
+
+
+    public static String moveDown(List<List<Character>> contentMap, int row,int col){
+        while(row<contentMap.size()){
+            if(contentMap.get(row).get(col)=='#'){
+
+                return moveLeft(contentMap,row-1,col-1);
+            }
+
+            String index=String.valueOf(row)+" "+String.valueOf(col);
+            if(!isVisited.contains(index)){
+                COUNT++;
+                isVisited.add(index);
+            }
+            row++;
+        }
+
+//    crossed border
+        return "success";
+    }
+
+    public static String moveLeft(List<List<Character>> contentMap, int row,int col){
+        while(col>=0){
+            if(contentMap.get(row).get(col)=='#'){
+
+                return moveUp(contentMap,row-1,col+1);
+            }
+            String index=String.valueOf(row)+" "+String.valueOf(col);
+            if(!isVisited.contains(index)){
+                COUNT++;
+                isVisited.add(index);
+            }
+            col--;
+        }
+
+//    crossed border
+        return "success";
+    }
+
+    public static String moveRight(List<List<Character>> contentMap, int row,int col){
+        while(col<contentMap.getFirst().size()){
+            if(contentMap.get(row).get(col)=='#'){
+
+                return moveDown(contentMap,row+1,col-1);
+            }
+            String index=String.valueOf(row)+" "+String.valueOf(col);
+            if(!isVisited.contains(index)){
+                COUNT++;
+                isVisited.add(index);
+            }
+            col++;
+        }
+
+//    crossed border
+        return "success";
+    }
+
+    public static List<String> readFile(String fileName) {
+        // Replace with your file path
+        List<String> lines = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line); // Add each line to the list
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return lines;
+    }
+
+
+
+    public static int[] findGuard(List<String> content){
+        int [] position = new int[2];
+
+        for(int i=0;i<content.size();i++){
+            String s = content.get(i);
+            if(s.contains("^")){
+                position[0] = i;
+                position[1] = s.indexOf('^');
+            } else if (s.contains("<")) {
+                position[0] = i;
+                position[1] = s.indexOf('<');
+            } else if (s.contains("v")) {
+                position[0] = i;
+                position[1] = s.indexOf('v');
+            } else if (s.contains(">")) {
+                position[0] = i;
+                position[1] = s.indexOf('>');
+            }
+        }
+
+        return position;
+    }
+
+
+}
